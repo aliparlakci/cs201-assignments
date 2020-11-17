@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include "strutils.h"
 using namespace std;
 
 bool check_input(string color, double length, double width, double height);
@@ -8,8 +9,6 @@ void calculate(string color, double length, double width, double height, double 
 string compare(string colorA, string colorB, string metric, double quantityA, double quantityB);
 void display(string color, double area, double volume);
 void checkCubeAndDisplay(string color, double length, double width, double height);
-string ToLower(string s);
-string ToUpper(string s);
 
 int main()
 {
@@ -24,7 +23,12 @@ int main()
     cout << "Please enter colors for the two cuboids: ";
     cin >> colorOfCuboidA >> colorOfCuboidB;
 
-    if (ToLower(colorOfCuboidA) != ToLower(colorOfCuboidB))
+    string lowerColorA = "" + colorOfCuboidA;
+    string lowerColorB = "" + colorOfCuboidB;
+    ToLower(lowerColorA);
+    ToLower(lowerColorB);
+
+    if (lowerColorA != lowerColorB)
     {
         cout << "Please enter length, width and height of the " << colorOfCuboidA << " cuboid: ";
         cin >> lengthA >> widthA >> heightA;
@@ -119,24 +123,4 @@ string compare(string colorA, string colorB, string metric, double quantityA, do
     result += ".";
 
     return result;
-}
-
-string ToLower(string s)
-{
-    int len = s.length();
-    for (int k = 0; k < len; k++)
-    {
-        s[k] = tolower(s[k]);
-    }
-    return s;
-}
-
-string ToUpper(string s)
-{
-    int len = s.length();
-    for (int k = 0; k < len; k++)
-    {
-        s[k] = toupper(s[k]);
-    }
-    return s;
 }
