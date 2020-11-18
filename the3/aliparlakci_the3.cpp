@@ -5,44 +5,115 @@
 using namespace std;
 
 string scanMultipleWords();
-bool startsWith(string s, string prefix);
-bool endsWith(string s, string suffix);
-bool hasInMiddle(string s, string search);
+int startsWith(string s, string prefix);
+int endsWith(string s, string suffix);
+int hasInMiddle(string s, string search);
+int contains(string s, string search);
 bool isProperlyFormatted(string s);
-string getNextWord(string sentence, int &index);
+string getNextWord(string sentence, int index);
+void search(string source, string search);
+void printFound(int index, string word);
 
 int main()
 {
     string sourceString;
     string searchString;
 
-    string test = "alidir benim adım";
-    int i = 0;
-    while (i < test.length())
+    do
     {
-        cout << getNextWord(test, i) << endl;
-    }
-    // do
-    // {
-    //     cout << "Enter source string: ";
-    //     sourceString = scanMultipleWords();
+        cout << "Enter source string: ";
+        sourceString = scanMultipleWords();
 
-    //     if (UpperString(sourceString) != "QUIT" && isProperlyFormatted(sourceString))
-    //     {
-    //         cout << "Enter search string: ";
-    //         cin >> searchString;
-    //     }
+    } while (!isProperlyFormatted(sourceString));
 
-    // } while (UpperString(sourceString) != "QUIT");
+    do
+    {
+        cout << "Enter search string: ";
+        cin >> searchString;
+
+        search(sourceString, searchString);
+
+    } while (UpperString(searchString) != "QUIT");
 
     return 0;
+}
+
+void search(string source, string search)
+{
+    bool starts = endsWith(search, "+") >= 0;
+    bool ends = endsWith(search, ".") >= 0;
+    bool any = endsWith(search, "**") >= 0;
+    bool middle = endsWith(search, "*") >= 0 && !any;
+
+    string searchWithoutParameter;
+
+    if (starts || ends || middle)
+    {
+        searchWithoutParameter = search.substr(0, search.length() - 1);
+    }
+    else if (any)
+    {
+        searchWithoutParameter = search.substr(0, search.length() - 2);
+    }
+
+    string word;
+    string partialWord;
+    bool isNewWord = true;
+    int index = 0;
+    int position = -1;
+
+    if (starts || ends || middle || any)
+    {
+        while (index < source.length())
+        {
+            partialWord = getNextWord(source, index);
+            if (isNewWord)
+            {
+                word = partialWord;
+            }
+
+            if (starts && isNewWord)
+            {
+                position = startsWith(partialWord, searchWithoutParameter);
+            }
+            else if (ends)
+            {
+                position = endsWith(partialWord, searchWithoutParameter);
+            }
+            else if (any)
+            {
+                position = contains(partialWord, searchWithoutParameter);
+            }
+            else if (middle)
+            {
+                position = hasInMiddle(partialWord, searchWithoutParameter);
+                if (!isNewWord)
+                {
+                    position = max(position, startsWith(partialWord, searchWithoutParameter));
+                }
+            }
+
+            if (position >= 0)
+            {
+                printFound(index + position, word);
+                index += position + 1;
+                isNewWord = false;
+                position = -1;
+            }
+            else
+            {
+                index += partialWord.length() + 1;
+                isNewWord = true;
+            }
+        }
+    }
 }
 
 bool isProperlyFormatted(string s)
 {
     for (int i = 0; i < s.length(); i++)
     {
-        if ((s[i] >= 'A' && s[i] >= 'Z') || (s[i] >= 'a' && s[i] >= 'z') || (s[i] >= '0' && s[i] >= '9') || s[i] == ' ')
+        if ((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z') || (s[i] >= '0' && s[i] <= '9') || s[i] == ' ')
         {
             // character is valid
         }
@@ -66,41 +137,72 @@ string scanMultipleWords()
     return result;
 }
 
-bool endsWith(string s, string suffix)
+int endsWith(string s, string suffix)
 {
-    return s.substr(s.length() - suffix.length()) == suffix;
-}
 
-bool startsWith(string s, string prefix)
-{
-    return s.substr(0, prefix.length()) == prefix;
-}
-
-bool hasInMiddle(string s, string search)
-{
-    if (s.find(search) == string::npos)
+    if ((int)(s.length() - suffix.length()) < 0)
     {
-        return false;
+        return -1;
+    }
+    else if (s.substr(s.length() - suffix.length()) == suffix)
+    {
+        return s.length() - suffix.length();
     }
     else
     {
-        return !startsWith(s, search) && !endsWith(s, search);
+        return -1;
     }
 }
 
-string getNextWord(string sentence, int &index)
+int startsWith(string s, string prefix)
+{
+    if ((int)(s.length() - prefix.length()) < 0)
+    {
+        return -1;
+    }
+    else if (s.substr(0, prefix.length()) == prefix)
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+int hasInMiddle(string s, string search)
+{
+    if (startsWith(s, search) >= 0 || endsWith(s, search) >= 0)
+    {
+        return -1;
+    }
+    return contains(s, search);
+}
+
+int contains(string s, string search)
+{
+    int position = s.find(search);
+    if (position != string::npos)
+    {
+        return position;
+    }
+    return -1;
+}
+
+void printFound(int index, string word)
+{
+    cout << "index: " << index << " word: " << word << endl;
+}
+
+string getNextWord(string sentence, int index)
 {
     string word;
     for (int i = index; i < sentence.length(); i++)
     {
         if (sentence.at(i) == ' ')
         {
-            word = sentence.substr(index, i - index);
-            index = i + 1;
-            return word;
+            return sentence.substr(index, i - index);
         }
     }
-    word = sentence.substr(index, sentence.length() - index);
-    index = sentence.length();
-    return word;
+    return sentence.substr(index, sentence.length() - index);
 }
