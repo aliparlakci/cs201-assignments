@@ -45,15 +45,13 @@ void search(string source, string search)
     bool any = endsWith(search, "**") >= 0;
     bool middle = endsWith(search, "*") >= 0 && !any;
 
-    string searchWithoutParameter;
-
     if (starts || ends || middle)
     {
-        searchWithoutParameter = search.substr(0, search.length() - 1);
+        search = search.substr(0, search.length() - 1);
     }
     else if (any)
     {
-        searchWithoutParameter = search.substr(0, search.length() - 2);
+        search = search.substr(0, search.length() - 2);
     }
 
     string word;
@@ -74,22 +72,23 @@ void search(string source, string search)
 
             if (starts && isNewWord)
             {
-                position = startsWith(partialWord, searchWithoutParameter);
+                position = startsWith(partialWord, search);
             }
             else if (ends)
             {
-                position = endsWith(partialWord, searchWithoutParameter);
+                position = endsWith(partialWord, search);
             }
             else if (any)
             {
-                position = contains(partialWord, searchWithoutParameter);
+                position = contains(partialWord, search);
             }
             else if (middle)
             {
-                position = hasInMiddle(partialWord, searchWithoutParameter);
+                position = hasInMiddle(partialWord, search);
                 if (!isNewWord)
                 {
-                    position = max(position, startsWith(partialWord, searchWithoutParameter));
+                    int positionStart = startsWith(partialWord, search);
+                    position = positionStart >= 0 ? positionStart : position;
                 }
             }
 
