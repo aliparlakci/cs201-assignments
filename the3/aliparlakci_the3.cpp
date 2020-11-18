@@ -13,6 +13,7 @@ bool isProperlyFormatted(string s);
 string getNextWord(string sentence, int index);
 void search(string source, string search);
 void printFound(int index, string word);
+void extractParameters(string &search, bool &starts, bool &ends, bool &any, bool &middle);
 
 int main()
 {
@@ -40,19 +41,8 @@ int main()
 
 void search(string source, string search)
 {
-    bool starts = endsWith(search, "+") >= 0;
-    bool ends = endsWith(search, ".") >= 0;
-    bool any = endsWith(search, "**") >= 0;
-    bool middle = endsWith(search, "*") >= 0 && !any;
-
-    if (starts || ends || middle)
-    {
-        search = search.substr(0, search.length() - 1);
-    }
-    else if (any)
-    {
-        search = search.substr(0, search.length() - 2);
-    }
+    bool starts, ends, any, middle;
+    extractParameters(search, starts, ends, any, middle);
 
     string word;
     string partialWord;
@@ -105,6 +95,23 @@ void search(string source, string search)
                 isNewWord = true;
             }
         }
+    }
+}
+
+void extractParameters(string &search, bool &starts, bool &ends, bool &any, bool &middle)
+{
+    starts = endsWith(search, "+") >= 0;
+    ends = endsWith(search, ".") >= 0;
+    any = endsWith(search, "**") >= 0;
+    middle = endsWith(search, "*") >= 0 && !any;
+
+    if (starts || ends || middle)
+    {
+        search = search.substr(0, search.length() - 1);
+    }
+    else if (any)
+    {
+        search = search.substr(0, search.length() - 2);
     }
 }
 
