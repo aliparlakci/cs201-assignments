@@ -5,27 +5,35 @@
 using namespace std;
 
 string scanMultipleWords();
+bool startsWith(string s, string prefix);
 bool endsWith(string s, string suffix);
+bool hasInMiddle(string s, string search);
 bool isProperlyFormatted(string s);
-string getWord(string &sentence);
+string getNextWord(string sentence, int &index);
 
 int main()
 {
     string sourceString;
     string searchString;
 
-    do
+    string test = "alidir benim adım";
+    int i = 0;
+    while (i < test.length())
     {
-        cout << "Enter source string: ";
-        sourceString = scanMultipleWords();
+        cout << getNextWord(test, i) << endl;
+    }
+    // do
+    // {
+    //     cout << "Enter source string: ";
+    //     sourceString = scanMultipleWords();
 
-        if (UpperString(sourceString) != "QUIT" && isProperlyFormatted(sourceString))
-        {
-            cout << "Enter search string: ";
-            cin >> searchString;
-        }
+    //     if (UpperString(sourceString) != "QUIT" && isProperlyFormatted(sourceString))
+    //     {
+    //         cout << "Enter search string: ";
+    //         cin >> searchString;
+    //     }
 
-    } while (UpperString(sourceString) != "QUIT");
+    // } while (UpperString(sourceString) != "QUIT");
 
     return 0;
 }
@@ -63,20 +71,36 @@ bool endsWith(string s, string suffix)
     return s.substr(s.length() - suffix.length()) == suffix;
 }
 
-string getWord(string &sentence)
+bool startsWith(string s, string prefix)
+{
+    return s.substr(0, prefix.length()) == prefix;
+}
+
+bool hasInMiddle(string s, string search)
+{
+    if (s.find(search) == string::npos)
+    {
+        return false;
+    }
+    else
+    {
+        return !startsWith(s, search) && !endsWith(s, search);
+    }
+}
+
+string getNextWord(string sentence, int &index)
 {
     string word;
-    for (int i = 0; i < sentence.length() - 1; i++)
+    for (int i = index; i < sentence.length(); i++)
     {
-        if (sentence.at(i + 1) == ' ')
+        if (sentence.at(i) == ' ')
         {
-            word = sentence.substr(0, i + 1);
-            sentence = sentence.substr(i + 1, sentence.length() - 1);
-            StripWhite(sentence);
+            word = sentence.substr(index, i - index);
+            index = i + 1;
             return word;
         }
     }
-    word = "" + sentence;
-    sentence = "";
+    word = sentence.substr(index, sentence.length() - index);
+    index = sentence.length();
     return word;
 }
