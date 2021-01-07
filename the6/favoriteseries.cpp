@@ -223,7 +223,7 @@ bool FavoriteSeries::isConflict(const series &inSeries) const
     {
         for (int j = 0; j < favSeries[i].episodes.size() && !result; j++)
         {
-            for (int k = 0; k < inSeries.episodes.size() && !result; j++)
+            for (int k = 0; k < inSeries.episodes.size() && !result; k++)
             {
                 episode favEpisode = favSeries[i].episodes[j];
                 episode inEpisode = inSeries.episodes[k];

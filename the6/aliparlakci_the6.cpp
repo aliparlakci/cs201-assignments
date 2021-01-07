@@ -73,6 +73,7 @@ void run(vector<series> &seriesList, FavoriteSeries &favorites)
 
         case 3:
             remove(seriesList, favorites);
+            break;
 
         case 4:
             printFavoriteSeries(favorites);
@@ -84,6 +85,7 @@ void run(vector<series> &seriesList, FavoriteSeries &favorites)
 
         case 6:
             isEnded = true;
+            cout << "Goodbye, " << favorites.getFullName() << "!" << endl;
             break;
 
         default:
@@ -104,7 +106,7 @@ void printMenu()
          << "5. Print all your favorite actors" << endl
          << "6. Exit" << endl
          << "---" << endl
-         << "Enter your choice: ";
+         << "Please enter your choice: ";
 }
 
 void printAll(vector<series> &seriesList)
@@ -160,6 +162,13 @@ void add(vector<series> &seriesList, FavoriteSeries &favorites)
 
 void remove(vector<series> &seriesList, FavoriteSeries &favorites)
 {
+
+    if (favorites.isListEmpty())
+    {
+        cout << favorites.getFullName() << ", you did not add any TV series yet!" << endl;
+        return;
+    }
+
     int code;
     cout << "Enter code for the TV series you want to drop: ";
     cin >> code;
@@ -176,17 +185,13 @@ void remove(vector<series> &seriesList, FavoriteSeries &favorites)
         }
     }
 
-    if (favorites.isListEmpty())
+    if (!favorites.ifExists(code))
     {
-        cout << favorites.getFullName() << ", you did not add any TV series yet!" << endl;
+        cout << favorites.getFullName() << ", there is no such TV series in your favorite list!" << endl;
     }
     else if (!isFound)
     {
         cout << favorites.getFullName() << ", there is no such TV series in the database!" << endl;
-    }
-    else if (!favorites.ifExists(code))
-    {
-        cout << favorites.getFullName() << ", there is no such TV series in your favorite list!" << endl;
     }
     else
     {
@@ -205,7 +210,7 @@ void printFavoriteSeries(FavoriteSeries &favorites)
     }
     else
     {
-        cout << favorites.getFullName() << " here is your favorite TV series:" << endl;
+        cout << favorites.getFullName() << ", here is your favorite TV series:" << endl;
         favorites.displayFavoriteList();
     }
 }
@@ -218,7 +223,7 @@ void printFavoriteActors(FavoriteSeries &favorites)
     }
     else
     {
-        cout << favorites.getFullName() << " here is your favorite actors:" << endl;
+        cout << favorites.getFullName() << ", here is your favorite actors:" << endl;
         favorites.displayFavoriteActors();
     }
 }
@@ -287,9 +292,9 @@ vector<series> readSeries(ifstream &seriesFile)
                 else
                 {
                     actor += word;
-                    actor += " ";
                     lineStream >> word;
                     isEnd = lineStream.fail();
+                    actor += isEnd ? "" : " ";
                 }
             }
 
